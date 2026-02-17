@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🐾 Virtual Pet Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #fdf6ee;
+      --card: #ffffff;
+      --border: #f0e0cc;
+      --orange: #ff7043;
+      --green: #4caf88;
+      --yellow: #ffb300;
+      --purple: #5c6bc0;
+      --red: #e53935;
+      --text: #2d2d2d;
+      --muted: #999;
+      --soft: #fff3e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Nunito', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, #e0c9b0 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 30px 20px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    header .emoji { font-size: 3.5rem; display: block; }
+    header h1 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 2.2rem;
+      color: var(--orange);
+      margin: 6px 0 4px;
+    }
+    header p { color: var(--muted); font-weight: 600; }
+
+    /* ── Add Pet Form ── */
+    .form-box {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .form-box h2 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      color: var(--purple);
+      margin-bottom: 16px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--orange); }
+
+    .btn {
+      padding: 11px 24px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-orange { background: var(--orange); color: #fff; }
+    .btn-green  { background: var(--green);  color: #fff; }
+    .btn-yellow { background: var(--yellow); color: #fff; }
+    .btn-red    { background: var(--red);    color: #fff; font-size: 0.8rem; padding: 8px 14px; }
+
+    /* ── Pet Cards ── */
+    #pets-section h2 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    #pets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .pet-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      animation: popIn 0.35s ease both;
+      transition: border-color 0.2s;
+    }
+    .pet-card:hover { border-color: var(--orange); }
+
+    .pet-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .pet-emoji { font-size: 2.4rem; }
+    .pet-name  { font-weight: 900; font-size: 1.05rem; }
+    .pet-meta  { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+    .mood-badge {
+      margin-left: auto;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: var(--soft);
+      color: var(--orange);
+      white-space: nowrap;
+    }
+
+    .activity-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .activity-label span { color: var(--text); font-weight: 800; }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .act-btn {
+      padding: 7px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--bg);
+      color: var(--text);
+      transition: all 0.2s;
+      font-family: 'Nunito', sans-serif;
+    }
+    .act-btn:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+    .delete-row { text-align: right; margin-top: 8px; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #2d2d2d;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      z-index: 999;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Empty state ── */
+    #empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--muted);
+      display: none;
+    }
+    #empty .big { font-size: 3rem; }
+    #empty p { font-weight: 700; margin-top: 10px; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <span class="emoji">🐾</span>
+    <h1>Virtual Pet Log</h1>
+    <p>Keep track of your pets' moods and activities</p>
+  </header>
+
+  <!-- Add Pet Form -->
+  <div class="form-box">
+    <h2>➕ Add a New Pet</h2>
+    <div class="form-grid">
+      <input type="text" id="pet-name" placeholder="Pet name (e.g. Fluffy)" />
+      <select id="pet-type">
+        <option value="">Select type...</option>
+        <option value="🐱 Cat">🐱 Cat</option>
+        <option value="🐶 Dog">🐶 Dog</option>
+        <option value="🐹 Hamster">🐹 Hamster</option>
+        <option value="🐰 Rabbit">🐰 Rabbit</option>
+        <option value="🐦 Bird">🐦 Bird</option>
+        <option value="🐢 Turtle">🐢 Turtle</option>
+        <option value="🐠 Fish">🐠 Fish</option>
+      </select>
+      <input type="number" id="pet-age" placeholder="Age (years)" min="0" max="30"/>
+      <select id="pet-mood">
+        <option value="Happy 😊">Happy 😊</option>
+        <option value="Hungry 🍖">Hungry 🍖</option>
+        <option value="Sleepy 😴">Sleepy 😴</option>
+        <option value="Playful 🎾">Playful 🎾</option>
+        <option value="Sick 🤒">Sick 🤒</option>
+      </select>
+    </div>
+    <button class="btn btn-orange" onclick="addPet()">🐾 Add Pet</button>
+  </div>
+
+  <!-- Pets Grid -->
+  <div id="pets-section">
+    <h2>📋 My Pets</h2>
+    <div id="pets-grid"></div>
+    <div id="empty">
+      <div class="big">🐾</div>
+      <p>No pets yet! Add your first pet above.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<script>
+  const API = "http://localhost:5000";
+
+  // ── Pet type to emoji ────────────────────────────────
+  function getEmoji(type) {
+    const map = {
+      "🐱 Cat": "🐱", "🐶 Dog": "🐶", "🐹 Hamster": "🐹",
+      "🐰 Rabbit": "🐰", "🐦 Bird": "🐦", "🐢 Turtle": "🐢", "🐠 Fish": "🐠"
+    };
+    return map[type] || "🐾";
+  }
+
+  // ── Toast notification ───────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2800);
+  }
+
+  // ── Load all pets ────────────────────────────────────
+  async function loadPets() {
+    const res  = await fetch(`${API}/pets`);
+    const pets = await res.json();
+    const grid = document.getElementById("pets-grid");
+    const empty = document.getElementById("empty");
+    grid.innerHTML = "";
+
+    if (pets.length === 0) {
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+
+    pets.forEach(pet => {
+      const card = document.createElement("div");
+      card.className = "pet-card";
+      card.innerHTML = `
+        <div class="pet-card-top">
+          <div class="pet-emoji">${getEmoji(pet.type)}</div>
+          <div>
+            <div class="pet-name">${pet.name}</div>
+            <div class="pet-meta">${pet.type} · Age ${pet.age}</div>
+          </div>
+          <div class="mood-badge">${pet.mood}</div>
+        </div>
+        <div class="activity-label">
+          Last activity: <span>${pet.last_activity}</span>
+        </div>
+        <div class="action-row">
+          <button class="act-btn" onclick="logActivity('${pet._id}', 'Fed 🍖', 'Happy 😊')">Fed 🍖</button>
+          <button class="act-btn" onclick="logActivity('${pet._id}', 'Walked 🦮', 'Playful 🎾')">Walked 🦮</button>
+          <button class="act-btn" onclick="logActivity('${pet._id}', 'Played 🎾', 'Happy 😊')">Played 🎾</button>
+          <button class="act-btn" onclick="logActivity('${pet._id}', 'Resting 😴', 'Sleepy 😴')">Resting 😴</button>
+        </div>
+        <div class="delete-row">
+          <button class="btn btn-red" onclick="deletePet('${pet._id}', '${pet.name}')">🗑️ Remove</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Add a new pet ────────────────────────────────────
+  async function addPet() {
+    const name = document.getElementById("pet-name").value.trim();
+    const type = document.getElementById("pet-type").value;
+    const age  = document.getElementById("pet-age").value;
+    const mood = document.getElementById("pet-mood").value;
+
+    if (!name || !type) {
+      showToast("⚠️ Please enter a name and type!");
+      return;
+    }
+
+    await fetch(`${API}/pets`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, type, age: parseInt(age) || 0, mood })
+    });
+
+    // Clear form
+    document.getElementById("pet-name").value = "";
+    document.getElementById("pet-type").value = "";
+    document.getElementById("pet-age").value  = "";
+
+    showToast(`🐾 ${name} has been added!`);
+    loadPets();
+  }
+
+  // ── Log an activity (updates mood) ──────────────────
+  async function logActivity(id, activity, mood) {
+    await fetch(`${API}/pets/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mood, last_activity: activity })
+    });
+    showToast(`✅ Logged: ${activity}`);
+    loadPets();
+  }
+
+  // ── Delete a pet ─────────────────────────────────────
+  async function deletePet(id, name) {
+    if (!confirm(`Remove ${name} from the log?`)) return;
+    await fetch(`${API}/pets/${id}`, { method: "DELETE" });
+    showToast(`🗑️ ${name} has been removed.`);
+    loadPets();
+  }
+
+  // ── Load pets on page open ───────────────────────────
+  loadPets();
+</script>
+</body>
+</html>
