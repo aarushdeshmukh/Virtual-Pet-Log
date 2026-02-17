@@ -1,9 +1,9 @@
 # 🐾 Virtual Pet Log
 
 A beginner-friendly full-stack web app to track your pets' moods and daily activities.  
-Built with **Python + Flask** on the backend and **HTML/CSS/JS** on the frontend, with **MongoDB** as the database.
+Built with **Python + Flask** on the backend and HTML/CSS/JS on the frontend, with MongoDB as the database.
 
-> Built by **[Your Name]**
+> Built by Aarush Deshmukh
 
 ---
 
@@ -32,7 +32,7 @@ Built with **Python + Flask** on the backend and **HTML/CSS/JS** on the frontend
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/virtual-pet-log.git
+git clone https://github.com/aarushdeshmukh/Virtual-Pet-Log.git
 cd virtual-pet-log
 ```
 
