@@ -88,7 +88,6 @@ Each pet document looks like this:
 }
 ```
 
----
 
 ## 📚 What I Learned
 
@@ -97,13 +96,10 @@ Each pet document looks like this:
 - How to build a REST API with Flask
 - How to connect a frontend to a backend using `fetch()`
 
----
 
 ## 👤 Author
+(Aarush deshmukh)  
+GitHub: [@yourusername](https://github.com/aarushdeshmukh)
 
-**[Your Name]**  
-GitHub: [@yourusername](https://github.com/yourusername)
-
----
 
 ⭐ If you liked this project, give it a star on GitHub!
